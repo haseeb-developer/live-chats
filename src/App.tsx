@@ -30,7 +30,7 @@ export default function App() {
           </div>
         </SignedOut>
         <SignedIn>
-          <ChatWindow country={country} />
+          <ChatWindow />
           <MessageInput country={country} />
         </SignedIn>
       </main>
