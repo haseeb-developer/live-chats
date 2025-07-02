@@ -21,11 +21,7 @@ function formatTime(ts: string) {
   return `${hours}:${minutesStr} ${ampm}`;
 }
 
-interface ChatWindowProps {
-  country?: string;
-}
-
-export default function ChatWindow({ country }: ChatWindowProps) {
+export default function ChatWindow() {
   const [messages, setMessages] = useState<Message[]>([]);
   const chatRef = useRef<HTMLDivElement>(null);
 
