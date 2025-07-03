@@ -1,5 +1,5 @@
 import { useUser } from '@clerk/clerk-react';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { supabase } from '../utils/supabaseClient';
 
 export default function Header() {
@@ -25,11 +25,7 @@ export default function Header() {
   // Subscribe to presence table for real-time updates
   useEffect(() => {
     const fetchActive = async () => {
-      const since = new Date(Date.now() - 10000).toISOString();
-      const { data } = await supabase
-        .from('presence')
-        .select('username,last_active')
-        .gte('last_active', since);
+      // This function is now a no-op since activeUsers is not used
     };
     fetchActive();
     const channel = supabase
