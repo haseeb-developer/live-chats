@@ -10,12 +10,8 @@ export async function fetchCountryCode(): Promise<string | null> {
   }
 }
 
-// Convert country code (e.g., 'US') to flag emoji
-export function countryCodeToFlagEmoji(countryCode: string): string {
+// Convert country code (e.g., 'US') to flag image URL (using flagcdn.com)
+export function countryCodeToFlagImg(countryCode: string, size: number = 24): string {
   if (!countryCode) return '';
-  return countryCode
-    .toUpperCase()
-    .replace(/./g, char =>
-      String.fromCodePoint(127397 + char.charCodeAt(0))
-    );
+  return `https://flagcdn.com/w${size}/${countryCode.toLowerCase()}.png`;
 } 

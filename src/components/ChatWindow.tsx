@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
-import { countryCodeToFlagEmoji } from '../utils/country';
+import { countryCodeToFlagImg } from '../utils/country';
+import { format, isToday, isYesterday } from 'date-fns';
 import { useUser } from '@clerk/clerk-react';
 
 interface Message {
@@ -13,13 +14,13 @@ interface Message {
 
 function formatTime(ts: string) {
   const date = new Date(ts);
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-  return `${hours}:${minutesStr} ${ampm}`;
+  if (isToday(date)) {
+    return `Today - ${format(date, 'h:mm a')}`;
+  } else if (isYesterday(date)) {
+    return `Yesterday - ${format(date, 'h:mm a')}`;
+  } else {
+    return `${format(date, 'MM/dd/yyyy - h:mm a')}`;
+  }
 }
 
 export default function ChatWindow() {
@@ -79,7 +80,16 @@ export default function ChatWindow() {
                 onMouseOver={e => { if (isMsgAdmin) e.currentTarget.style.background = 'rgba(37,99,235,0.16)'; }}
                 onMouseOut={e => { if (isMsgAdmin) e.currentTarget.style.background = 'rgba(37,99,235,0.08)'; }}
               >
-                <span className="chatwindow-flag">{msg.country ? countryCodeToFlagEmoji(msg.country) : '🌐'}</span>
+                {msg.country ? (
+                  <img
+                    src={countryCodeToFlagImg(msg.country, 24)}
+                    alt={msg.country}
+                    className="w-6 h-6 rounded-sm shadow border border-gray-700 bg-white object-cover"
+                    style={{ minWidth: 24 }}
+                  />
+                ) : (
+                  <span className="text-xl select-none drop-shadow-sm">🌐</span>
+                )}
                 <span className="chatwindow-username" style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: '1.08em', color: isMsgAdmin ? '#2563eb' : undefined }}>
                   {msg.username}
                   {isMsgAdmin && (
