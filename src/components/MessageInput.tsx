@@ -78,78 +78,35 @@ export default function MessageInput({ country }: { country: string }) {
   };
 
   return (
-    <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', position: 'relative', zIndex: 10 }}>
-      <div style={{ width: '100%', maxWidth: 'calc(100vw - 260px)', marginLeft: 260, position: 'relative' }}>
-        <div className="input-fixed-bottom">
-          <form
-            onSubmit={handleSend}
-            style={{
-              width: '100%',
-              background: '#f6f8fa',
-              borderTop: '1.5px solid #e0e7ef',
-              display: 'flex',
-              alignItems: 'center',
-              padding: '18px 24px 18px 24px',
-              zIndex: 100,
-              boxShadow: '0 -2px 16px #0001',
-              position: 'relative',
-            }}
-          >
-            <input
-              ref={inputRef}
-              style={{
-                flex: 1,
-                borderRadius: '999px',
-                background: '#fff',
-                color: '#222',
-                padding: '14px 20px',
-                outline: 'none',
-                border: '1.5px solid #e0e7ef',
-                fontSize: 17,
-                fontWeight: 500,
-                marginRight: 12,
-                boxShadow: '0 1px 8px #0001',
-              }}
-              type="text"
-              placeholder="Type your message..."
-              value={message}
-              onChange={e => setMessage(e.target.value)}
-              disabled={sending}
-              maxLength={300}
-              autoFocus
-            />
-            <button
-              type="submit"
-              style={{
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #2563eb 0%, #60a5fa 100%)',
-                padding: 0,
-                width: 48,
-                height: 48,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: 'none',
-                color: '#fff',
-                fontSize: 22,
-                boxShadow: '0 2px 8px #2563eb22',
-                cursor: sending || !message.trim() ? 'not-allowed' : 'pointer',
-                opacity: sending || !message.trim() ? 0.6 : 1,
-                transition: 'opacity 0.2s',
-              }}
-              disabled={sending || !message.trim()}
-              aria-label="Send"
-            >
-              {sending ? (
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
-              ) : (
-                <PaperAirplaneIcon className="h-5 w-5" />
-              )}
-            </button>
-            {error && <span style={{ marginLeft: 16, color: '#e11d48', fontSize: 14 }}>{error}</span>}
-          </form>
-        </div>
-      </div>
-    </div>
+    <form
+      onSubmit={handleSend}
+      className="messageinput-root"
+      style={{ position: 'sticky', bottom: 0 }}
+    >
+      <input
+        ref={inputRef}
+        className="messageinput-input"
+        type="text"
+        placeholder="Type your message..."
+        value={message}
+        onChange={e => setMessage(e.target.value)}
+        disabled={sending}
+        maxLength={300}
+        autoFocus
+      />
+      <button
+        type="submit"
+        className="messageinput-sendbtn"
+        disabled={sending || !message.trim()}
+        aria-label="Send"
+      >
+        {sending ? (
+          <svg className="messageinput-spinner" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+        ) : (
+          <PaperAirplaneIcon className="messageinput-icon" />
+        )}
+      </button>
+      {error && <span className="messageinput-error">{error}</span>}
+    </form>
   );
 } 

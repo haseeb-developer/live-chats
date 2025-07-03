@@ -1,7 +1,6 @@
 import { useUser, useClerk } from '@clerk/clerk-react';
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../utils/supabaseClient';
-import { FiUsers } from 'react-icons/fi';
 
 function getInitials(name: string) {
   return name
@@ -70,46 +69,45 @@ export default function Header() {
   }, []);
 
   return (
-    <header style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: 72,
-      background: 'linear-gradient(90deg, #f6f8fa 0%, #e9ecf3 100%)',
-      boxShadow: '0 2px 16px #0001',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '0 36px',
-      zIndex: 100,
-      borderBottom: '1.5px solid #e0e7ef',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span style={{ fontSize: 28, fontWeight: 800, color: '#2563eb', letterSpacing: 0.5 }}>Global Chat</span>
-      </div>
-      {user && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-          <span style={{ fontWeight: 600, color: '#2563eb', fontSize: 18 }}>@{user.username}</span>
-          <button
-            onClick={() => signOut()}
-            style={{
-              padding: '10px 28px',
-              borderRadius: 999,
-              background: 'linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)',
-              color: '#fff',
-              fontWeight: 700,
-              fontSize: 17,
-              border: 'none',
-              boxShadow: '0 2px 8px #2563eb22',
-              cursor: 'pointer',
-              transition: 'background 0.2s',
-            }}
-          >
-            Sign Out
-          </button>
-        </div>
-      )}
+    <header
+      className="header-root"
+      style={{
+        width: '100%',
+        maxWidth: '100%',
+        margin: 0,
+        padding: '1.2rem 2.5vw',
+        background: 'rgba(34, 38, 49, 0.7)',
+        borderRadius: '2.5rem 2.5rem 1.5rem 1.5rem',
+        boxShadow: '0 8px 32px 0 rgba(31,38,135,0.18)',
+        borderBottom: '2px solid rgba(96,165,250,0.18)',
+        backdropFilter: 'blur(22px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(22px) saturate(180%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        position: 'relative',
+        overflow: 'visible',
+        zIndex: 20,
+      }}
+    >
+      <span
+        className="header-title"
+        style={{
+          fontSize: '2.1rem',
+          fontWeight: 900,
+          letterSpacing: '-0.03em',
+          background: 'linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          textShadow: '0 2px 12px rgba(96,165,250,0.12)',
+          marginRight: 10,
+          userSelect: 'none',
+          display: 'inline-block',
+          animation: 'fadeInDown 0.7s cubic-bezier(.4,2,.6,1)'
+        }}
+      >
+        🌐 Global Chat
+      </span>
     </header>
   );
-}
+} 
