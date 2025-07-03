@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
-import { FiUsers, FiFlag } from 'react-icons/fi';
+import { FiShield } from 'react-icons/fi';
 
 interface Presence {
   user_id: string;
@@ -9,9 +9,15 @@ interface Presence {
   last_active: string;
 }
 
+function getInitials(name: string) {
+  if (!name) return '';
+  const parts = name.split(' ');
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
 export default function ActiveUsers() {
   const [users, setUsers] = useState<Presence[]>([]);
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -34,45 +40,102 @@ export default function ActiveUsers() {
     };
   }, []);
 
+  // Separate admin and other users
+  const admin = users.find(u => u.username?.toLowerCase() === 'haseebkhan');
+  const others = users.filter(u => u.username?.toLowerCase() !== 'haseebkhan');
+
   return (
-    <div>
-      <button
-        className="active-users-btn"
-        onClick={() => setShowModal(true)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 6, background: '#f3f4f6', color: '#2563eb', border: 'none', borderRadius: 20, padding: '6px 16px', fontWeight: 600, fontSize: 16, boxShadow: '0 1px 4px #0001', cursor: 'pointer', margin: 8
-        }}
-      >
-        <FiUsers size={20} style={{ marginRight: 6 }} />
-        {users.length} Active
-      </button>
-      {showModal && (
-        <div className="active-users-modal" style={{
-          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.18)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center'
+    <div className="fixed-sidebar">
+      {/* Admin Section */}
+      {admin && (
+        <div style={{
+          padding: '0 24px 18px 24px',
+          borderBottom: '1.5px solid #e0e7ef',
+          marginBottom: 18,
         }}>
-          <div style={{ background: '#fff', borderRadius: 16, padding: 24, minWidth: 320, boxShadow: '0 4px 32px #0002', maxHeight: '80vh', overflowY: 'auto', position: 'relative' }}>
-            <button
-              onClick={() => setShowModal(false)}
-              style={{ position: 'absolute', top: 12, right: 16, background: 'none', border: 'none', fontSize: 22, color: '#888', cursor: 'pointer' }}
-              aria-label="Close"
-            >
-              ×
-            </button>
-            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 12, color: '#2563eb', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <FiUsers size={22} /> Active Users
+          <div style={{ fontWeight: 700, color: '#2563eb', fontSize: 15, marginBottom: 6, letterSpacing: 0.2 }}>Admin | Developer | Owner</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{
+              width: 38,
+              height: 38,
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #2563eb 0%, #60a5fa 100%)',
+              color: '#fff',
+              fontWeight: 800,
+              fontSize: 18,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px 0 #2563eb22',
+              letterSpacing: '0.01em',
+              userSelect: 'none',
+              border: '2.5px solid #2563eb',
+              position: 'relative',
+            }}>
+              {getInitials(admin.username)}
+              {/* Green dot for online */}
+              <span style={{
+                position: 'absolute',
+                bottom: 4,
+                right: 4,
+                width: 11,
+                height: 11,
+                background: '#22c55e',
+                border: '2px solid #fff',
+                borderRadius: '50%',
+                boxShadow: '0 1px 4px #22c55e44',
+                display: 'inline-block',
+              }} />
             </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {users.map(user => (
-                <li key={user.user_id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, background: '#f3f4f6', borderRadius: 8, padding: '6px 12px' }}>
-                  <FiFlag size={18} style={{ color: '#2563eb' }} />
-                  <span style={{ fontWeight: 600, color: '#222' }}>{user.username}</span>
-                  <span style={{ color: '#888', fontSize: 13, marginLeft: 8 }}>{user.country}</span>
-                </li>
-              ))}
-            </ul>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span style={{ fontWeight: 700, color: '#2563eb', fontSize: 17 }}>{admin.username}</span>
+              <span style={{ color: '#888', fontSize: 13, fontWeight: 500 }}>Online</span>
+            </div>
+            <span style={{ marginLeft: 6, color: '#2563eb', fontWeight: 700, fontSize: 14, background: '#e6f0ff', borderRadius: 6, padding: '2px 8px', display: 'flex', alignItems: 'center', gap: 4 }}><FiShield size={14} style={{ marginRight: 2 }} /> Admin</span>
           </div>
         </div>
       )}
+      {/* Active Users Section */}
+      <div style={{ padding: '0 24px' }}>
+        <div style={{ fontWeight: 700, color: '#2563eb', fontSize: 15, marginBottom: 10, letterSpacing: 0.2 }}>Active Users</div>
+        {others.length === 0 && <div style={{ color: '#aaa', fontSize: 14, marginTop: 8 }}>No other users online</div>}
+        {others.map(user => (
+          <div key={user.user_id} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+            <div style={{
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              background: '#e0e7ef',
+              color: '#2563eb',
+              fontWeight: 800,
+              fontSize: 16,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 1px 4px 0 #2563eb11',
+              letterSpacing: '0.01em',
+              userSelect: 'none',
+              position: 'relative',
+            }}>
+              {getInitials(user.username)}
+              {/* Green dot for online */}
+              <span style={{
+                position: 'absolute',
+                bottom: 3,
+                right: 3,
+                width: 9,
+                height: 9,
+                background: '#22c55e',
+                border: '2px solid #fff',
+                borderRadius: '50%',
+                boxShadow: '0 1px 4px #22c55e44',
+                display: 'inline-block',
+              }} />
+            </div>
+            <span style={{ fontWeight: 700, color: '#222', fontSize: 15 }}>{user.username}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 } 

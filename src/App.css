@@ -1,7 +1,6 @@
 #root {
   margin: 0;
   padding: 0;
-  width: 100vw;
   min-height: 100vh;
   text-align: initial;
   background: none;
@@ -116,7 +115,6 @@
 
 /* Header Glassmorphism */
 .header-root {
-  width: 100vw;
   max-width: 700px;
   margin: 0 auto;
   padding: 1.2rem 2rem;
@@ -171,7 +169,7 @@
 
 /* ChatWindow */
 .chatwindow-root {
-  flex: 1;
+  flex: 1 !important;
     width: 100%;
     max-width: 100%;
   margin: 0 auto;
@@ -258,7 +256,6 @@
 
 /* MessageInput Glassmorphism */
 .messageinput-root {
-  width: 100vw;
   max-width: 700px;
   margin: 0 auto;
   display: flex;
@@ -332,4 +329,60 @@
 @keyframes badgePulse {
   0% { transform: scale(1); filter: drop-shadow(0 0 6px #60a5fa88); }
   100% { transform: scale(1.08); filter: drop-shadow(0 0 16px #60a5faee); }
+}
+
+/* Fixed header (assume Header component is already fixed at top) */
+.header-fixed {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  z-index: 100 !important;
+}
+
+/* Fixed sidebar styles */
+.fixed-sidebar {
+  position: fixed !important;
+  top: 80px !important;
+  left: 0 !important;
+  height: calc(100vh - 80px) !important;
+  width: 260px !important;
+  min-width: 200px !important;
+  max-width: 320px !important;
+  z-index: 20 !important;
+  background: #f7fafd !important;
+  border-right: 1.5px solid #e0e7ef !important;
+  box-shadow: 2px 0 8px #0001 !important;
+  overflow-y: auto !important;
+}
+
+/* Main chat area (scrollable) */
+.scrollable-chat-area {
+  flex: 1 1 0 !important;
+  margin-left: 260px !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: calc(100vh - 80px) !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* ChatWindow should scroll */
+.chat-window-scroll {
+  flex: 1 1 0 !important;
+  overflow-y: auto !important;
+  padding-bottom: 80px !important; /* for input */
+}
+
+/* MessageInput fixed at bottom of chat area */
+.input-fixed-bottom {
+  position: absolute !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  background: #fff !important;
+  border-top: 1px solid #e0e7ef !important;
+  z-index: 10 !important;
+  padding: 16px 24px !important;
 }

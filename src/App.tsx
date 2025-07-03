@@ -44,29 +44,51 @@ export default function App() {
   }, [isSignedIn, user, country]);
 
   return (
-    <div className="app-root min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 flex flex-col w-full overflow-hidden">
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f6f8fa 0%, #e9ecf3 100%)', width: '100vw', overflow: 'hidden' }}>
       <Header />
-      <main className="flex-1 flex flex-row w-full overflow-hidden">
+      <main style={{ paddingTop: 80, width: '100%', minHeight: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'row', overflow: 'hidden' }}>
         <SignedOut>
-          <div className="flex flex-1 items-center justify-center w-full">
-            <div className="flex flex-col items-center gap-6 p-10 bg-gray-800/80 rounded-2xl shadow-2xl">
-              <span className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">Welcome to Global Chat</span>
+          <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, padding: 40, background: '#fff', borderRadius: 18, boxShadow: '0 4px 32px #0001' }}>
+              <span style={{ fontSize: 32, fontWeight: 700, color: '#2563eb', marginBottom: 8 }}>Welcome to Global Chat</span>
               <SignInButton>
-                <button className="px-8 py-3 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-bold shadow-lg hover:scale-105 transition-transform duration-200 text-xl">Sign In</button>
+                <button style={{ padding: '16px 36px', borderRadius: 999, background: 'linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)', color: '#fff', fontWeight: 700, fontSize: 20, border: 'none', boxShadow: '0 2px 8px #2563eb22', cursor: 'pointer' }}>Sign In</button>
               </SignInButton>
             </div>
           </div>
         </SignedOut>
         <SignedIn>
-          {/* Sidebar for active users */}
-          <aside className="hidden md:flex flex-col w-64 min-w-[200px] max-w-xs bg-gray-900/90 border-r border-gray-800 h-full overflow-y-auto">
+          {/* Fixed Sidebar */}
+          <div style={{
+            position: 'fixed',
+            top: 80,
+            left: 0,
+            height: 'calc(100vh - 80px)',
+            width: 260,
+            minWidth: 200,
+            maxWidth: 320,
+            zIndex: 20,
+            background: '#f7fafd',
+            borderRight: '1.5px solid #e0e7ef',
+            boxShadow: '2px 0 8px #0001',
+            overflowY: 'auto',
+          }}>
             <ActiveUsers />
-          </aside>
-          {/* Main chat area */}
-          <section className="flex-1 flex flex-col h-full w-full overflow-hidden">
+          </div>
+          {/* Main chat area, scrollable */}
+          <div style={{
+            flex: 1,
+            marginLeft: 260,
+            minWidth: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            height: 'calc(100vh - 80px)',
+            overflow: 'hidden',
+            position: 'relative',
+          }}>
             <ChatWindow />
             <MessageInput country={country} />
-          </section>
+          </div>
         </SignedIn>
       </main>
     </div>
