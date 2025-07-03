@@ -218,29 +218,50 @@ export default function ChatWindow() {
           );
         })}
       </div>
-      {/* Typing indicator fixed below chat, above input */}
-      {typingUsers.length > 0 && (
-        <div style={{
-          position: 'sticky',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          background: 'rgba(34,38,49,0.85)',
-          color: '#60a5fa',
-          fontWeight: 600,
-          fontSize: '1.05em',
-          letterSpacing: '0.01em',
-          padding: '6px 18px 2px 18px',
-          minHeight: 24,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          zIndex: 12,
-          animation: 'fadeInTyping 0.2s',
-        }}>
-          {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is typing...' : 'are typing...'}
-        </div>
-      )}
+      {/* Typing indicator absolutely fixed above input */}
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        height: 0,
+        zIndex: 100,
+      }}>
+        {typingUsers.length > 0 && (
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: '64px', // adjust if your input is taller/shorter
+            margin: '0 auto',
+            width: '100%',
+            background: 'rgba(34,38,49,0.92)',
+            color: '#60a5fa',
+            fontWeight: 600,
+            fontSize: '1.05em',
+            letterSpacing: '0.01em',
+            padding: '7px 18px 3px 18px',
+            minHeight: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            borderRadius: 10,
+            boxShadow: '0 2px 12px 0 #60a5fa22',
+            animation: 'fadeInTyping 0.2s',
+            pointerEvents: 'none',
+            justifyContent: 'flex-start',
+            maxWidth: '100vw',
+          }}>
+            {(() => {
+              if (typingUsers.length === 1) {
+                return `${typingUsers[0]} is typing...`;
+              } else if (typingUsers.length === 2) {
+                return `${typingUsers[0]} and ${typingUsers[1]} are typing...`;
+              } else {
+                return `${typingUsers[0]}, ${typingUsers[1]} +${typingUsers.length - 2} more are typing...`;
+              }
+            })()}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
