@@ -2,7 +2,6 @@ import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/clerk-react';
 import Header from './components/Header';
 import ChatWindow from './components/ChatWindow';
 import MessageInput from './components/MessageInput';
-import ActiveUsers from './components/ActiveUsers';
 import { useEffect, useState } from 'react';
 import { fetchCountryCode } from './utils/country';
 import { supabase } from './utils/supabaseClient';
@@ -58,10 +57,6 @@ export default function App() {
           </div>
         </SignedOut>
         <SignedIn>
-          {/* Sidebar for active users */}
-          <aside className="hidden md:flex flex-col w-64 min-w-[200px] max-w-xs bg-gray-900/90 border-r border-gray-800 h-full overflow-y-auto">
-            <ActiveUsers />
-          </aside>
           {/* Main chat area */}
           <section className="flex-1 flex flex-col h-full w-full overflow-hidden">
             <ChatWindow />

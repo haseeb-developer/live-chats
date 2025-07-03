@@ -47,6 +47,9 @@ export default function ChatWindow() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
         fetchMessages();
       })
+      .on('broadcast', { event: 'clear' }, () => {
+        setMessages([]);
+      })
       .subscribe();
 
     return () => {
@@ -135,11 +138,24 @@ export default function ChatWindow() {
                     </span>
                   )}
                   {isMsgAdmin && (
-                    <span style={{ color: '#2563eb', fontWeight: 700, fontSize: '0.98em', background: 'rgba(37,99,235,0.08)', borderRadius: 6, padding: '1px 8px', marginLeft: 6, letterSpacing: '0.03em', border: '1px solid #f95', transition: 'box-shadow 0.3s', display: 'inline-flex', alignItems: 'center' }} title="Admin: Can pin/delete messages, verified developer">Admin | Developer</span>
-                  )}
-                  {/* Pinned badge for demo: show on every 5th message */}
-                  {isMsgAdmin && (messages.indexOf(msg) % 5 === 0) && (
-                    <span style={{ color: '#fff', background: '#2563eb', borderRadius: 5, padding: '1px 7px', marginLeft: 6, fontWeight: 600, fontSize: '0.93em', letterSpacing: '0.02em' }}>Pinned</span>
+                    <span style={{
+                      background: 'linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6)',
+                      color: '#fff',
+                      fontWeight: 800,
+                      fontSize: '1.05em',
+                      borderRadius: 8,
+                      padding: '2px 14px',
+                      marginLeft: 8,
+                      letterSpacing: '0.04em',
+                      boxShadow: '0 2px 12px 0 #a78bfa44',
+                      border: 'none',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      textShadow: '0 2px 8px #a78bfa33',
+                      textTransform: 'uppercase',
+                    }} title="Admin: Full access, verified developer, owner">
+                      Admin | Developer | Owner
+                    </span>
                   )}
                   {/* Delete button for admin: only show if current user is admin */}
                   {isAdmin && (
@@ -165,8 +181,22 @@ export default function ChatWindow() {
                       </button>
                       {dropdownOpen === msg.id && (
                         <div style={{ position: 'absolute', top: 28, right: 0, background: '#23272f', color: '#fff', borderRadius: 8, boxShadow: '0 2px 12px 0 #0003', zIndex: 10, minWidth: 120, padding: '6px 0', display: 'flex', flexDirection: 'column', gap: 0 }}>
-                          <button style={{ background: 'none', border: 'none', color: '#fbbf24', fontWeight: 600, padding: '8px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '1em' }} onClick={() => { setDropdownOpen(null); alert('Kick user: ' + msg.username + ' (demo)'); }}>Kick user</button>
-                          <button style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, padding: '8px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '1em' }} onClick={() => { setDropdownOpen(null); alert('Ban user: ' + msg.username + ' (demo)'); }}>Ban user</button>
+                          <button style={{ background: 'none', border: 'none', color: '#fbbf24', fontWeight: 600, padding: '8px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '1em' }} onClick={async () => {
+                            setDropdownOpen(null);
+                            // Kick: remove from presence for 10 minutes
+                            await supabase.from('presence').delete().eq('username', msg.username);
+                            // Optionally, store a "kickedUntil" timestamp in a separate table or in-memory (not shown here)
+                          }}>Kick user (10 min)</button>
+                          <button style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, padding: '8px 16px', textAlign: 'left', cursor: 'pointer', fontSize: '1em' }} onClick={async () => {
+                            setDropdownOpen(null);
+                            // Ban: disable user in Clerk
+                            try {
+                              const res = await fetch(`/api/ban-user?username=${encodeURIComponent(msg.username)}`);
+                              if (!res.ok) throw new Error('Failed to ban user');
+                            } catch (err) {
+                              alert('Failed to ban user.');
+                            }
+                          }}>Ban user (permanent)</button>
                         </div>
                       )}
                     </span>
