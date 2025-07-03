@@ -29,7 +29,7 @@ export default function Header() {
   // Subscribe to presence table for real-time updates
   useEffect(() => {
     const fetchActive = async () => {
-      // This function is now a no-op since activeUsers is not used
+      // No-op: kept for subscription, no unused 'data' variable
     };
     fetchActive();
     const channel = supabase
