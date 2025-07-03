@@ -217,26 +217,30 @@ export default function ChatWindow() {
             </div>
           );
         })}
-        {/* Typing indicator */}
-        {typingUsers.length > 0 && (
-          <div style={{
-            marginTop: 10,
-            marginBottom: 10,
-            color: '#60a5fa',
-            fontWeight: 600,
-            fontSize: '1.05em',
-            letterSpacing: '0.01em',
-            paddingLeft: 8,
-            minHeight: 24,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            animation: 'fadeInTyping 0.2s',
-          }}>
-            {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is typing...' : 'are typing...'}
-          </div>
-        )}
       </div>
+      {/* Typing indicator fixed below chat, above input */}
+      {typingUsers.length > 0 && (
+        <div style={{
+          position: 'sticky',
+          bottom: 0,
+          left: 0,
+          width: '100%',
+          background: 'rgba(34,38,49,0.85)',
+          color: '#60a5fa',
+          fontWeight: 600,
+          fontSize: '1.05em',
+          letterSpacing: '0.01em',
+          padding: '6px 18px 2px 18px',
+          minHeight: 24,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          zIndex: 12,
+          animation: 'fadeInTyping 0.2s',
+        }}>
+          {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is typing...' : 'are typing...'}
+        </div>
+      )}
     </div>
   );
 }
