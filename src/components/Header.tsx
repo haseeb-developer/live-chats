@@ -110,33 +110,6 @@ export default function Header() {
         >
           Note
         </button>
-        {/* Clear All Chat for Admin Only */}
-        {user?.username?.toLowerCase() === 'haseebkhan' && (
-          <button
-            title="Clear All Chat"
-            style={{
-              padding: '0.5rem 1.2rem',
-              borderRadius: '9999px',
-              background: 'linear-gradient(90deg, #f472b6, #a78bfa, #3b82f6)',
-              color: '#fff',
-              fontWeight: 'bold',
-              boxShadow: '0 2px 8px 0 rgba(0,0,0,0.10)',
-              border: 'none',
-              transition: 'transform 0.2s',
-              cursor: 'pointer',
-              marginRight: 8
-            }}
-            onClick={async () => {
-              if (window.confirm('Are you sure you want to clear all chat messages? This cannot be undone.')) {
-                await supabase.from('messages').delete().neq('id', '');
-                // Broadcast a custom event for live update
-                await supabase.channel('public:messages').send({ type: 'broadcast', event: 'clear' });
-              }
-            }}
-          >
-            CLEAR ALL CHAT
-          </button>
-        )}
         <div className="header-user-container">
           {user && (
             <span className="header-username" style={{ marginRight: 16, color: '#fff', fontWeight: 600, fontSize: '1.1rem', letterSpacing: '0.01em' }}>{user.username || user.fullName}</span>

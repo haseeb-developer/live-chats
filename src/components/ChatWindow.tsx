@@ -30,6 +30,7 @@ export default function ChatWindow() {
   const currentUsername = user?.username?.toLowerCase();
   const isAdmin = currentUsername === 'haseebkhan';
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null); // message id
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchMessages() {
@@ -42,20 +43,33 @@ export default function ChatWindow() {
     }
     fetchMessages();
 
-    const subscription = supabase
-      .channel('public:messages')
+    const channel = supabase.channel('public:messages');
+    const subscription = channel
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
+        fetchMessages();
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'messages' }, () => {
         fetchMessages();
       })
       .on('broadcast', { event: 'clear' }, () => {
         setMessages([]);
+      })
+      .on('broadcast', { event: 'typing' }, payload => {
+        const typingUser = payload.payload.username;
+        if (!typingUser || typingUser === user?.username) return;
+        setTypingUsers(prev => prev.includes(typingUser) ? prev : [...prev, typingUser]);
+      })
+      .on('broadcast', { event: 'stopped_typing' }, payload => {
+        const typingUser = payload.payload.username;
+        if (!typingUser) return;
+        setTypingUsers(prev => prev.filter(u => u !== typingUser));
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(subscription);
     };
-  }, []);
+  }, [user?.username]);
 
   useEffect(() => {
     chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
@@ -157,15 +171,6 @@ export default function ChatWindow() {
                       Admin | Developer | Owner
                     </span>
                   )}
-                  {/* Delete button for admin: only show if current user is admin */}
-                  {isAdmin && (
-                    <button style={{ marginLeft: 10, background: 'none', border: 'none', color: '#f87171', fontWeight: 700, cursor: 'pointer', fontSize: '0.95em', padding: '2px 6px', borderRadius: 4, transition: 'background 0.2s' }} title="Delete message" onClick={async () => {
-                      if (window.confirm('Are you sure you want to delete this message?')) {
-                        await supabase.from('messages').delete().eq('id', msg.id);
-                        setMessages(messages => messages.filter(m => m.id !== msg.id));
-                      }
-                    }}>Delete</button>
-                  )}
                   {/* 3-dot menu for admin to manage other users */}
                   {!isMsgAdmin && isAdmin && (
                     <span style={{ marginLeft: 10, position: 'relative' }}>
@@ -212,7 +217,34 @@ export default function ChatWindow() {
             </div>
           );
         })}
+        {/* Typing indicator */}
+        {typingUsers.length > 0 && (
+          <div style={{
+            marginTop: 10,
+            marginBottom: 10,
+            color: '#60a5fa',
+            fontWeight: 600,
+            fontSize: '1.05em',
+            letterSpacing: '0.01em',
+            paddingLeft: 8,
+            minHeight: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            animation: 'fadeInTyping 0.2s',
+          }}>
+            {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is typing...' : 'are typing...'}
+          </div>
+        )}
       </div>
     </div>
   );
+}
+
+// Add keyframes for typing indicator animation
+const style = document.createElement('style');
+style.innerHTML = `@keyframes fadeInTyping { from { opacity: 0; } to { opacity: 1; } }`;
+if (!document.head.querySelector('#typing-anim')) {
+  style.id = 'typing-anim';
+  document.head.appendChild(style);
 } 

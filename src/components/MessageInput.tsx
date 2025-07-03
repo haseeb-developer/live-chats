@@ -13,6 +13,8 @@ export default function MessageInput({ country }: { country: string }) {
   const filter = new Filter();
   const inputRef = useRef<HTMLInputElement>(null);
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeout = useRef<NodeJS.Timeout | null>(null);
+  const channel = supabase.channel('public:messages');
 
   // Focus input on '/' key (desktop only, not when already focused)
   useEffect(() => {
@@ -75,6 +77,27 @@ export default function MessageInput({ country }: { country: string }) {
     else setMessage('');
     lastSentRef.current = now;
     setTimeout(() => setSending(false), 2000);
+    // Broadcast stopped_typing on send
+    channel.send({ type: 'broadcast', event: 'stopped_typing', payload: { username } });
+  };
+
+  // Broadcast typing event on input
+  const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+    if (!user) return;
+    let username = user.username || (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : null) || user.fullName || user.id;
+    channel.send({ type: 'broadcast', event: 'typing', payload: { username } });
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    typingTimeout.current = setTimeout(() => {
+      channel.send({ type: 'broadcast', event: 'stopped_typing', payload: { username } });
+    }, 1200);
+  };
+
+  // Broadcast stopped_typing on blur
+  const handleBlur = () => {
+    if (!user) return;
+    let username = user.username || (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : null) || user.fullName || user.id;
+    channel.send({ type: 'broadcast', event: 'stopped_typing', payload: { username } });
   };
 
   return (
@@ -89,10 +112,11 @@ export default function MessageInput({ country }: { country: string }) {
         type="text"
         placeholder="Type your message..."
         value={message}
-        onChange={e => setMessage(e.target.value)}
+        onChange={handleTyping}
         disabled={sending}
         maxLength={300}
         autoFocus
+        onBlur={handleBlur}
       />
       <button
         type="submit"
