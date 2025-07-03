@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { FiUsers, FiFlag } from 'react-icons/fi';
-import { useUser } from '@clerk/clerk-react';
 
 interface Presence {
   user_id: string;
@@ -11,7 +10,6 @@ interface Presence {
 }
 
 export default function ActiveUsers() {
-  const { user: currentUser } = useUser();
   const [users, setUsers] = useState<Presence[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
